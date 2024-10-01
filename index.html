@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дни без курения</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .counter {
+            font-size: 2rem;
+            margin: 20px 0;
+        }
+
+        .message {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            color: #47a76a;
+            display: none;
+        }
+
+        .reset-message {
+            color: #B00000;
+            display: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            border: none;
+        }
+
+        .reset {
+            background-color: #B00000;
+            color: white;
+        }
+
+        .increment {
+            background-color: #47a76a;
+            color: white;
+        }
+
+        .disabled {
+            background-color: #a5a5a5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Счётчик дней без курения</h1>
+
+    <div class="counter">
+        <p>Дней без сигареты: <span id="daysWithoutSmoke">0</span></p>
+    </div>
+
+    <div class="message" id="motivationalMessage"></div>
+    <div class="reset-message" id="resetMessage">Очень жаль, что мы сорвались, но даже так - каждый день без курения это
+        здорово!</div>
+
+    <button class="increment" id="incrementButton">+1 день без сигареты</button>
+    <button class="reset" id="resetButton">Сбросить дни</button>
+
+    <script>
+        const motivationalMessages = [
+            'Отличное начало к новой офигенной сумке)',
+            'Настрой достойный восхищения ♥',
+            'Не сдавайся, ты управляешь своей жизнью, а не привычки',
+            'Каждый день без курения — это шаг к лучшей жизни.',
+            'Ты справляешься замечательно, я тобой горжусь!',
+            'Потрясающе, я впечатлен твоей стойкостью!!!',
+            'Так много?! Неужели стресс исчез из твоей жизни что ты так смогла?))',
+            'Один день за другим — так достигаются большие цели',
+            'Папа бы тобой гордился.',
+            'Какая же ты молодец, мы почти победили'
+        ];
+
+        let daysWithoutSmoke = Number(localStorage.getItem('daysWithoutSmoke')) || 0;
+        let pressCount = Number(localStorage.getItem('pressCount')) || 0;
+        let messageIndex = Number(localStorage.getItem('messageIndex')) || 0;
+
+        // Функция для обновления счётчика и показа сообщения
+        function updateCounter() {
+            document.getElementById('daysWithoutSmoke').textContent = daysWithoutSmoke;
+        }
+
+        // Проверка, можно ли нажимать кнопку
+        function canPressButton() {
+            const lastPressDate = localStorage.getItem('lastPressDate');
+            const today = new Date().toDateString();
+            return pressCount < 4 || lastPressDate !== today;
+        }
+
+        // Блокировка или разблокировка кнопки
+        function updateButtonState() {
+            const button = document.getElementById('incrementButton');
+            if (canPressButton()) {
+                button.classList.remove('disabled');
+                button.disabled = false;
+            } else {
+                button.classList.add('disabled');
+                button.disabled = true;
+            }
+        }
+
+        // Обработчик для кнопки "+1 день"
+        document.getElementById('incrementButton').addEventListener('click', () => {
+            if (!canPressButton()) return;
+
+            daysWithoutSmoke++;
+            pressCount++;
+            localStorage.setItem('daysWithoutSmoke', daysWithoutSmoke);
+            localStorage.setItem('pressCount', pressCount);
+            localStorage.setItem('lastPressDate', new Date().toDateString());
+
+            // Показываем мотивационное сообщение по порядку
+            const motivationalMessageDiv = document.getElementById('motivationalMessage');
+            motivationalMessageDiv.textContent = motivationalMessages[messageIndex];
+            motivationalMessageDiv.style.display = 'block';
+
+            // Увеличиваем индекс и обнуляем, если достигнут конец массива
+            messageIndex = (messageIndex + 1) % motivationalMessages.length;
+            localStorage.setItem('messageIndex', messageIndex);
+
+            // Скрываем сообщение о сбросе, если было
+            document.getElementById('resetMessage').style.display = 'none';
+
+            updateCounter();
+            updateButtonState();
+        });
+
+        // Обработчик для кнопки сброса
+        document.getElementById('resetButton').addEventListener('click', () => {
+            daysWithoutSmoke = 0;
+            pressCount = 0;
+            messageIndex = 0; // Сброс индекса сообщений
+            localStorage.setItem('daysWithoutSmoke', daysWithoutSmoke);
+            localStorage.setItem('pressCount', pressCount);
+            localStorage.setItem('messageIndex', messageIndex);
+
+            // Скрываем мотивационное сообщение
+            document.getElementById('motivationalMessage').style.display = 'none';
+
+            // Показываем сообщение о сбросе
+            document.getElementById('resetMessage').style.display = 'block';
+
+            updateCounter();
+            updateButtonState();
+        });
+
+        // Инициализация счётчика и кнопки
+        updateCounter();
+        updateButtonState();
+    </script>
+
+</body>
+
+</html>
