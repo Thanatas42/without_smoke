@@ -113,6 +113,15 @@
             }
         }
 
+        // Показ соответствующего сообщения при загрузке страницы
+        function showMotivationalMessage() {
+            if (daysWithoutSmoke > 0) {
+                const motivationalMessageDiv = document.getElementById('motivationalMessage');
+                motivationalMessageDiv.textContent = motivationalMessages[messageIndex-1];
+                motivationalMessageDiv.style.display = 'block';
+            }
+        }
+
         // Обработчик для кнопки "+1 день"
         document.getElementById('incrementButton').addEventListener('click', () => {
             if (!canPressButton()) return;
@@ -161,6 +170,7 @@
         // Инициализация счётчика и кнопки
         updateCounter();
         updateButtonState();
+        showMotivationalMessage(); // Показ сообщения при загрузке страницы, если есть дни
     </script>
 
 </body>
