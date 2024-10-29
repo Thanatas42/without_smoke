@@ -94,25 +94,6 @@
             document.getElementById('daysWithoutSmoke').textContent = daysWithoutSmoke;
         }
 
-        // Проверка, можно ли нажимать кнопку
-        function canPressButton() {
-            const lastPressDate = localStorage.getItem('lastPressDate');
-            const today = new Date().toDateString();
-            return pressCount < 4 || lastPressDate !== today;
-        }
-
-        // Блокировка или разблокировка кнопки
-        function updateButtonState() {
-            const button = document.getElementById('incrementButton');
-            if (canPressButton()) {
-                button.classList.remove('disabled');
-                button.disabled = false;
-            } else {
-                button.classList.add('disabled');
-                button.disabled = true;
-            }
-        }
-
         // Показ соответствующего сообщения при загрузке страницы
         function showMotivationalMessage() {
             if (daysWithoutSmoke > 0) {
@@ -124,8 +105,6 @@
 
         // Обработчик для кнопки "+1 день"
         document.getElementById('incrementButton').addEventListener('click', () => {
-            if (!canPressButton()) return;
-
             daysWithoutSmoke++;
             pressCount++;
             localStorage.setItem('daysWithoutSmoke', daysWithoutSmoke);
